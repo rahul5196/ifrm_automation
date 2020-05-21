@@ -22,7 +22,6 @@ expect "7a6e7f24430e"
 
 expect "dev@"
 
-
 send "screen -S kafka\n"
 
 expect "dev@"
@@ -36,8 +35,6 @@ send "docker exec -it ifrm_kafka_latest /bin/bash\n"
 expect "bash"
 
 send "cd \$KAFKA_HOME/bin\n"
-
-
 
 send "./kafka-topics.sh --create --topic transactionmonitoring-request-topic-name --zookeeper localhost:2181 --replication-factor 1 -partitions 1\n"
 
@@ -53,18 +50,15 @@ send "screen -S zeebe\n"
 
 expect "dev@"
 
-
 send "docker run -d --network host --name ifrm_simple_monitor  --rm ifrm_simple_monitor:latest\n"
 
 expect "dev@"
-
 
 send "docker run -d --network host --name ifrm_zeebe_broker --rm ifrm_zeebe_broker:latest\n"
 
 expect "dev@"
 
 send "docker cp New_workflow/ ifrm_zeebe_broker:/home\n"
-
 
 expect "dev@"
 
@@ -74,7 +68,7 @@ expect "root@"
 
 send "./bin/zbctl deploy /home/New_workflow/atm_new.bpmn\n"
 
-expect "{"
+expect "error"
 
 expect "root"
 
@@ -84,20 +78,17 @@ expect "{"
 
 expect "root"
 
-
 send "./bin/zbctl deploy /home/New_workflow/pos_new.bpmn\n"
 
 expect "{"
 
 expect "root"
 
-
 send "./bin/zbctl deploy /home/New_workflow/ecom_new.bpmn\n"
 
 expect "{"
 
 expect "root"
-
 
 send "./bin/zbctl deploy /home/New_workflow/ibmb_new.bpmn\n"
 
@@ -109,11 +100,9 @@ send "exit\n"
 
 expect "dev@"
 
-
 send "\01d\n"
 
 expect "dev@"
-
 
 send "screen -S consul\n"
 
@@ -151,7 +140,7 @@ send "bash ifrm-kafka-register.sh\n"
 
 expect "dev@"
 
-send "docker restart 547e80fe51e9 6d5847b39f59 99fd76ae8022 7314f755c556 011d4b537313 e4969ae4176d 150cc2bbd82c 464f23706275 82278455c90d cbb8bc3a6707 03cee4be45a0 d73e3e4a9a9d c4369f07b4cd \n"
+send "docker restart 547e80fe51e9 6d5847b39f59 99fd76ae8022 7314f755c556 011d4b537313 e4969ae4176d 150cc2bbd82c 464f23706275 82278455c90d cbb8bc3a6707 03cee4be45a0 d73e3e4a9a9d c4369f07b4cd\n"
 
 expect "547e80fe51e9"
 expect "6d5847b39f59"
@@ -197,13 +186,11 @@ expect "dev@"
 
 send "bash ifrm-case-review-register.sh\n"
 
-
 expect "dev@"
 
 send "bash ifrm-customer-service-register.sh\n"
 
 expect "dev@"
-
 
 send "bash ifrm-investigation-register.sh\n"
 
@@ -211,9 +198,7 @@ expect "dev@"
 
 send "bash ifrm-transaction-monitoring-register.sh\n"
 
-
 expect "dev@"
-
 
 send "bash ifrm-screener-register.sh\n"
 
@@ -235,15 +220,11 @@ send "bash ifrm-ecom-rule-engine-register.sh\n"
 
 expect "dev@"
 
-
 send "bash ifrm-ibmb-rule-engine-register.sh\n"
 
 expect "dev@"
 
 send "bash ifrm-card-common-register.sh\n"
-
-
-send "bash ifrm-all-service-register.sh\n"
 
 expect "dev@"
 
@@ -263,8 +244,7 @@ expect "HTTP"
 
 expect "dev@"
 
-
-send "bash ifrm-customer-service-consul-check.sh \n"
+send "bash ifrm-customer-service-consul-check.sh\n"
 
 expect "HTTP"
 
@@ -284,11 +264,9 @@ expect "dev@"
 
 send "bash ifrm-screener-consul-check.sh\n"
 
-
 expect "HTTP"
 
 expect "dev@"
-
 
 send "bash ifrm-upi-rule-engine-consul-check.sh\n"
 
@@ -296,9 +274,7 @@ expect "HTTP"
 
 expect "dev@"
 
-
 send "bash ifrm-atm-rule-engine-consul-check.sh\n"
-
 
 expect "HTTP"
 
@@ -328,13 +304,6 @@ expect "HTTP"
 
 expect "dev@"
 
-
-send "bash ifrm-consul-check-all.sh\n"
-
-expect "HTTP"
-
-expect "dev@"
-
 send "service nginx stop\n"
 
 expect "Choose"
@@ -345,12 +314,9 @@ expect "Password:"
 
 send "dev123\n"
 
-
 expect "dev@"
 
-
 send "docker run -d --network host --rm ifrm_ubuntu_ui:22.1\n"
-
 
 interact
 
