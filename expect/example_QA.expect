@@ -14,6 +14,160 @@ spawn ssh -q dev@$hostname
 
 expect "dev@"
 
+send "docker restart 88ea2a939c31 7a6e7f24430e\n"
+
+expect "88ea2a939c31"
+
+expect "7a6e7f24430e"
+
+expect "dev@"
+
+
+send "screen -S kafka\n"
+
+expect "dev@"
+
+send "docker run -d --network host --name ifrm_kafka_latest --rm ifrm_kafka:latest\n"
+
+expect "dev@"
+
+send "docker exec -it ifrm_kafka_latest /bin/bash\n"
+
+expect "bash"
+
+send "cd \$KAFKA_HOME/bin\n"
+
+
+
+send "./kafka-topics.sh --create --topic transactionmonitoring-request-topic-name --zookeeper localhost:2181 --replication-factor 1 -partitions 1\n"
+
+send "exit\n"
+
+expect "dev@"
+
+send "\01d\n"
+
+expect "dev@"
+
+send "screen -S zeebe\n"
+
+expect "dev@"
+
+
+send "docker run -d --network host --name ifrm_simple_monitor  --rm ifrm_simple_monitor:latest\n"
+
+expect "dev@"
+
+
+send "docker run -d --network host --name ifrm_zeebe_broker --rm ifrm_zeebe_broker:latest\n"
+
+expect "dev@"
+
+send "docker cp New_workflow/ ifrm_zeebe_broker:/home\n"
+
+
+expect "dev@"
+
+send "docker exec -it ifrm_zeebe_broker /bin/bash\n"
+
+expect "root@"
+
+send "./bin/zbctl deploy /home/New_workflow/atm_new.bpmn\n"
+
+expect "{"
+
+expect "root"
+
+send "./bin/zbctl deploy /home/New_workflow/atm_new.bpmn\n"
+
+expect "{"
+
+expect "root"
+
+
+send "./bin/zbctl deploy /home/New_workflow/pos_new.bpmn\n"
+
+expect "{"
+
+expect "root"
+
+
+send "./bin/zbctl deploy /home/New_workflow/ecom_new.bpmn\n"
+
+expect "{"
+
+expect "root"
+
+
+send "./bin/zbctl deploy /home/New_workflow/ibmb_new.bpmn\n"
+
+expect "{"
+
+expect "root"
+
+send "exit\n"
+
+expect "dev@"
+
+
+send "\01d\n"
+
+expect "dev@"
+
+
+send "screen -S consul\n"
+
+expect "dev@"
+
+send "docker run  --network host --name ifrm_consul --rm ifrm_consul:latest\n"
+
+expect "{"
+
+send "\01d\n"
+
+expect "dev@"
+
+send "screen -S fabio\n" 
+
+expect "dev@"
+
+send "./fabio-1.5.11-go1.11.5-linux_amd64\n"
+
+send "\01d\n"
+
+expect "\["
+
+expect "dev@"
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-registration\n"
+
+expect "dev"
+
+send "bash ifrm-cassandra-register.sh\n"
+
+expect "dev@"
+
+send "bash ifrm-kafka-register.sh\n"
+
+expect "dev@"
+
+send "docker restart 547e80fe51e9 6d5847b39f59 99fd76ae8022 7314f755c556 011d4b537313 e4969ae4176d 150cc2bbd82c 464f23706275 82278455c90d cbb8bc3a6707 03cee4be45a0 d73e3e4a9a9d c4369f07b4cd \n"
+
+expect "547e80fe51e9"
+expect "6d5847b39f59"
+expect "99fd76ae8022"
+expect "7314f755c556"
+expect "011d4b537313"
+expect "e4969ae4176d"
+expect "150cc2bbd82c"
+expect "464f23706275"
+expect "82278455c90d"
+expect "cbb8bc3a6707"
+expect "03cee4be45a0"
+expect "d73e3e4a9a9d"
+expect "c4369f07b4cd"
+
+expect "dev@"
 
 send "cd /home/dev/QA/17042020/ifrm-audit-log/deployment/consul-service-registration\n"
 
@@ -57,7 +211,9 @@ expect "dev@"
 
 send "bash ifrm-transaction-monitoring-register.sh\n"
 
+
 expect "dev@"
+
 
 send "bash ifrm-screener-register.sh\n"
 
@@ -79,11 +235,15 @@ send "bash ifrm-ecom-rule-engine-register.sh\n"
 
 expect "dev@"
 
+
 send "bash ifrm-ibmb-rule-engine-register.sh\n"
 
 expect "dev@"
 
 send "bash ifrm-card-common-register.sh\n"
+
+
+send "bash ifrm-all-service-register.sh\n"
 
 expect "dev@"
 
@@ -103,7 +263,8 @@ expect "HTTP"
 
 expect "dev@"
 
-send "bash ifrm-customer-service-consul-check.sh\n"
+
+send "bash ifrm-customer-service-consul-check.sh \n"
 
 expect "HTTP"
 
@@ -167,6 +328,12 @@ expect "HTTP"
 
 expect "dev@"
 
+
+send "bash ifrm-consul-check-all.sh\n"
+
+expect "HTTP"
+
+expect "dev@"
 
 send "service nginx stop\n"
 

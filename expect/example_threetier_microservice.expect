@@ -1,0 +1,321 @@
+#!/usr/bin/expect
+set timeout 40
+set hostname [lindex $argv 0]
+log_user 1
+
+if {[llength $argv] == 0} {
+  send_user "Usage: scriptname hostname\n"
+  exit 1
+}
+
+# send_user "\n#####\n# $hostname\n#####\n"
+
+spawn ssh -q rahul@$hostname
+
+expect "rahul@"
+
+send "docker restart 7a9896873309\n"
+
+expect "7a9896873309"
+
+
+expect "rahul@"
+
+
+send "screen -S kafka\n"
+
+expect "rahul@"
+
+send "docker run -d --network host --name ifrm_kafka_latest --rm ifrm_kafka:2.1\n"
+
+expect "rahul@"
+
+send "docker exec -it ifrm_kafka_latest /bin/bash\n"
+
+expect "bash"
+
+send "cd \$KAFKA_HOME/bin\n"
+
+
+
+send "./kafka-topics.sh --create --topic transactionmonitoring-request-topic-name --zookeeper localhost:2181 --replication-factor 1 -partitions 1\n"
+
+send "exit\n"
+
+send "\01d"
+
+expect "rahul@"
+
+send "screen -S zeebe\n"
+
+expect "rahul@"
+
+
+send "docker run -d --network host --name ifrm_simple_monitor  --rm ifrm_simple_monitor:latest\n"
+
+expect "dev@"
+
+
+send "docker run -d --network host --name ifrm_zeebe_broker --rm ifrm_zeebe_broker:latest\n"
+
+expect "rahul@"
+
+send "docker cp New_workflow/ ifrm_zeebe_broker:/home\n"
+
+
+expect "rahul@"
+
+send "docker exec -it ifrm_zeebe_broker /bin/bash\n"
+
+expect "root@"
+
+send "./bin/zbctl deploy /home/New_workflow/atm_new.bpmn\n"
+
+expect "{"
+
+expect "root"
+
+send "./bin/zbctl deploy /home/New_workflow/atm_new.bpmn\n"
+
+expect "{"
+
+expect "root"
+
+
+send "./bin/zbctl deploy /home/New_workflow/pos_new.bpmn\n"
+
+expect "{"
+
+expect "root"
+
+
+send "./bin/zbctl deploy /home/New_workflow/ecom_new.bpmn\n"
+
+expect "{"
+
+expect "root"
+
+
+send "./bin/zbctl deploy /home/New_workflow/ibmb_new.bpmn\n"
+
+expect "{"
+
+expect "root"
+
+send "exit\n"
+
+expect "rahul@"
+
+
+send "\01d"
+
+expect "rahul@"
+
+
+send "screen -S consul\n"
+
+expect "rahul@"
+
+send "docker run -d --network host --name ifrm_consul --rm consul:latest\n"
+
+expect "{"
+
+send "\01d"
+
+expect "rahul@"
+
+send "screen -S fabio\n" 
+
+expect "rahul@"
+
+send "./fabio-1.5.11-go1.11.5-linux_amd64 | more\n"
+
+expect "{"
+
+send "\01d"
+
+expect "\["
+
+expect "rahul@"
+
+
+send "cd /home/rahul/untag/ifrm-api/deployment/consul-service-registration\n"
+
+expect "rahul@"
+
+send "bash ifrm-cassandra-register.sh\n"
+
+expect "rahul@"
+
+send "bash ifrm-kafka-register.sh\n"
+
+expect "rahul@"
+
+send "docker restart 035f5d5367ec 00fb0664df15 9a61dd45719e 8db5c00c98c0 2719ab0a56fb 2bbfaf82822d eeff869991ad 3d2d9a830afd  2ffe436d51ec 4af0291e30c7 6b40717aa8cc 047a5acc5b95 4a4d43e42d5d cfd5f0f8a353 4210b7dc4aa6 cbd798482b0a\n"
+ 
+expect "035f5d5367ec"
+expect "00fb0664df15"
+expect "9a61dd45719e"
+expect "3c6be382da00"
+expect "8db5c00c98c0"
+expect "2719ab0a56fb"
+expect "2bbfaf82822d"
+expect "eeff869991ad"
+expect "3d2d9a830afd"
+expect "a28f48d0ba76"
+expect "2ffe436d51ec"
+expect "4af0291e30c7"
+expect "6b40717aa8cc"
+expect "047a5acc5b95"
+expect "4a4d43e42d5d"
+expect "cfd5f0f8a353"
+expect "4210b7dc4aa6"
+expect "cbd798482b0a"
+
+expect "rahul@"
+
+
+send "cd /home/rahul/untag/ifrm-audit-log/deployment/consul-service-registration\n"
+
+expect "rahul@"
+
+send "bash ifrm-audit-log-register.sh\n"
+
+expect "rahul@"
+
+send "cd /home/rahul/untag/ifrm-audit-log/deployment/consul-service-check\n"
+
+expect "rahul@"
+
+send "bash ifrm-audit-log-consul-check.sh\n"
+
+expect "HTTP"
+
+expect "rahul@"
+
+
+send "cd /home/rahul/untag/ifrm-api/deployment/consul-service-registration\n"
+
+expect "rahul@"
+
+send "bash ifrm-all-service-register.sh\n"
+
+expect "rahul@"
+
+
+send "bash ifrm-atm-real-time-serivce-register.sh\n"
+
+expect "rahul@"
+
+send "bash ifrm-atm-batch-mode-serivce-register.sh\n"
+
+expect "rahul@"
+
+send "bash ifrm-ecom-batch-mode-serivce-register.sh\n"
+
+expect "rahul@"
+
+send "bash ifrm-ecom-real-time-serivce-register.sh\n"
+
+expect "rahul@"
+
+send "bash ifrm-ibmb-batch-mode-serivce-register.sh\n"
+
+expect "rahul@"
+
+send "bash ifrm-ibmb-real-time-serivce-register.sh\n"
+
+expect "rahul@"
+
+send "bash ifrm-pos-batch-mode-serivce-register.sh\n"
+
+expect "rahul@"
+
+send "bash ifrm-pos-real-time-serivce-register.sh\n"
+
+expect "rahul@"
+
+
+
+
+
+
+
+
+
+send "cd /home/rahul/untag/ifrm-api/deployment/consul-service-check\n"
+
+expect "rahul@"
+
+send "bash ifrm-consul-check-all.sh\n"
+
+expect "HTTP"
+
+expect "rahul@"
+
+
+
+send "bash ifrm-atm-batch-mode-service-consul-check.sh\n"
+
+expect "HTTP"
+
+expect "rahul@"
+
+send "bash ifrm-atm-real-time-service-consul-check.sh\n"
+
+expect "HTTP"
+
+expect "rahul@"
+
+
+send "bash ifrm-ecom-batch-mode-service-consul-check.sh\n"
+
+expect "HTTP"
+
+expect "rahul@"
+
+send "bash ifrm-ecom-real-time-service-consul-check.sh\n"
+
+expect "HTTP"
+
+expect "rahul@"
+
+
+
+send "bash ifrm-ibmb-batch-mode-service-consul-check.sh\n"
+
+expect "HTTP"
+
+expect "rahul@"
+
+send "bash ifrm-ibmb-real-time-service-consul-check.sh\n"
+
+expect "HTTP"
+
+expect "rahul@"
+
+
+send "bash ifrm-pos-batch-mode-service-consul-check.sh\n"
+
+expect "HTTP"
+
+expect "rahul@"
+
+send "bash ifrm-pos-real-time-service-consul-check.sh\n"
+
+expect "HTTP"
+
+expect "rahul@"
+
+interact
+
+
+
+
+
+
+
+
+
+
+
