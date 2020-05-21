@@ -68,7 +68,7 @@ expect "root@"
 
 send "./bin/zbctl deploy /home/New_workflow/atm_new.bpmn\n"
 
-expect "error"
+expect "{"
 
 expect "root"
 
@@ -184,50 +184,6 @@ send "bash ifrm-user-access-management-register.sh\n"
 
 expect "dev@"
 
-send "bash ifrm-case-review-register.sh\n"
-
-expect "dev@"
-
-send "bash ifrm-customer-service-register.sh\n"
-
-expect "dev@"
-
-send "bash ifrm-investigation-register.sh\n"
-
-expect "dev@"
-
-send "bash ifrm-transaction-monitoring-register.sh\n"
-
-expect "dev@"
-
-send "bash ifrm-screener-register.sh\n"
-
-expect "dev@"
-
-send "bash ifrm-upi-rule-engine-register.sh\n"
-
-expect "dev@"
-
-send "bash ifrm-atm-rule-engine-register.sh\n"
-
-expect "dev@"
-
-send "bash ifrm-pos-rule-engine-register.sh\n"
-
-expect "dev@"
-
-send "bash ifrm-ecom-rule-engine-register.sh\n"
-
-expect "dev@"
-
-send "bash ifrm-ibmb-rule-engine-register.sh\n"
-
-expect "dev@"
-
-send "bash ifrm-card-common-register.sh\n"
-
-expect "dev@"
-
 send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-check\n"
 
 expect "dev@"
@@ -238,9 +194,41 @@ expect "HTTP"
 
 expect "dev@"
 
+
+
+
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-registration\n"
+
+expect "dev@"
+
+send "bash ifrm-case-review-register.sh\n"
+
+expect "dev@"
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-check\n"
+
+expect "dev@"
+
 send "bash ifrm-case-review-consul-check.sh\n"
 
 expect "HTTP"
+
+expect "dev@"
+
+
+
+
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-registration\n"
+
+expect "dev@"
+
+send "bash ifrm-customer-service-register.sh\n"
+
+expect "dev@"
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-check\n"
 
 expect "dev@"
 
@@ -250,9 +238,43 @@ expect "HTTP"
 
 expect "dev@"
 
+
+
+
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-registration\n"
+
+expect "dev@"
+
+send "bash ifrm-investigation-register.sh\n"
+
+expect "dev@"
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-check\n"
+
+expect "dev@"
+
 send "bash ifrm-investigation-consul-check.sh\n"
 
 expect "HTTP"
+
+expect "dev@"
+
+
+
+
+
+
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-registration\n"
+
+expect "dev@"
+
+send "bash ifrm-transaction-monitoring-register.sh\n"
+
+expect "dev@"
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-check\n"
 
 expect "dev@"
 
@@ -262,9 +284,40 @@ expect "HTTP"
 
 expect "dev@"
 
+
+
+
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-registration\n"
+
+expect "dev@"
+
+send "bash ifrm-screener-register.sh\n"
+
+expect "dev@"
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-check\n"
+
+expect "dev@"
+
 send "bash ifrm-screener-consul-check.sh\n"
 
 expect "HTTP"
+
+expect "dev@"
+
+
+
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-registration\n"
+
+expect "dev@"
+
+send "bash ifrm-upi-rule-engine-register.sh\n"
+
+expect "dev@"
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-check\n"
 
 expect "dev@"
 
@@ -274,9 +327,38 @@ expect "HTTP"
 
 expect "dev@"
 
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-registration\n"
+
+expect "dev@"
+
+send "bash ifrm-atm-rule-engine-register.sh\n"
+
+expect "dev@"
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-check\n"
+
+expect "dev@"
+
 send "bash ifrm-atm-rule-engine-consul-check.sh\n"
 
 expect "HTTP"
+
+expect "dev@"
+
+
+
+
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-registration\n"
+
+expect "dev@"
+
+send "bash ifrm-pos-rule-engine-register.sh\n"
+
+expect "dev@"
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-check\n"
 
 expect "dev@"
 
@@ -286,9 +368,39 @@ expect "HTTP"
 
 expect "dev@"
 
+
+
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-registration\n"
+
+expect "dev@"
+
+send "bash ifrm-ecom-rule-engine-register.sh\n"
+
+expect "dev@"
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-check\n"
+
+expect "dev@"
+
 send "bash ifrm-ecom-rule-engine-consul-check.sh\n"
 
 expect "HTTP"
+
+expect "dev@"
+
+
+
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-registration\n"
+
+expect "dev@"
+
+send "bash ifrm-ibmb-rule-engine-register.sh\n"
+
+expect "dev@"
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-check\n"
 
 expect "dev@"
 
@@ -298,11 +410,31 @@ expect "HTTP"
 
 expect "dev@"
 
+
+
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-registration\n"
+
+expect "dev@"
+
+
+send "bash ifrm-card-common-register.sh\n"
+
+expect "dev@"
+
+
+send "cd /home/dev/QA/17042020/ifrm-api/deployment/consul-service-check\n"
+
+expect "dev@"
+
+
 send "bash ifrm-card-common-consul-check.sh\n"
 
 expect "HTTP"
 
 expect "dev@"
+
+
 
 send "service nginx stop\n"
 
