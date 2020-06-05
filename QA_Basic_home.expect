@@ -1,0 +1,741 @@
+#!/usr/bin/expect
+set timeout 25
+set hostname [lindex $argv 0]
+log_user 1
+
+if {[llength $argv] == 0} {
+  send_user "Usage: scriptname hostname\n"
+  exit 1
+}
+
+# send_user "\n#####\n# $hostname\n#####\n"
+
+spawn ssh -q dev@$hostname
+expect "dev@"
+
+
+
+send "docker restart ifrm_cassandra ifrm_postgress\n"
+
+expect "ifrm_cassandra"
+
+expect "ifrm_postgress"
+
+expect "dev@"
+
+send "screen -S kafka\n"
+
+expect "dev@"
+
+send "docker run -d --network host --name ifrm_kafka_latest --rm ifrm_kafka:latest\n"
+
+expect "dev@"
+
+send "docker exec -it ifrm_kafka_latest /bin/bash\n"
+
+expect "bash"
+
+send "cd \$KAFKA_HOME/bin\n"
+
+send "./kafka-topics.sh --create --topic transactionmonitoring-request-topic-name --zookeeper localhost:2181 --replication-factor 1 -partitions 1\n"
+
+send "exit\n"
+
+expect "dev@"
+
+send "\01d\n"
+
+expect "dev@"
+
+send "screen -S zeebe\n"
+
+expect "dev@"
+
+send "docker run -d --network host --name ifrm_simple_monitor  --rm ifrm_simple_monitor:latest\n"
+
+expect "dev@"
+
+send "docker run -d --network host --name ifrm_zeebe_broker --rm ifrm_zeebe_broker:latest\n"
+
+expect "dev@"
+
+send "docker cp New_workflow/ ifrm_zeebe_broker:/home\n"
+
+expect "dev@"
+
+send "docker exec -it ifrm_zeebe_broker /bin/bash\n"
+
+expect "root@"
+
+send "./bin/zbctl deploy /home/New_workflow/atm_new.bpmn\n"
+
+expect "{"
+
+expect "root"
+
+send "./bin/zbctl deploy /home/New_workflow/atm_new.bpmn\n"
+
+expect "{"
+
+expect "root"
+
+send "./bin/zbctl deploy /home/New_workflow/pos_new.bpmn\n"
+
+expect "{"
+
+expect "root"
+
+send "./bin/zbctl deploy /home/New_workflow/ecom_new.bpmn\n"
+
+expect "{"
+
+expect "root"
+
+send "./bin/zbctl deploy /home/New_workflow/ibmb_new.bpmn\n"
+
+expect "{"
+
+expect "root"
+
+send "exit\n"
+
+expect "dev@"
+
+send "\01d\n"
+
+expect "dev@"
+
+send "screen -S consul\n"
+
+expect "dev@"
+
+send "docker run  --network host --name ifrm_consul --rm ifrm_consul:latest\n"
+
+expect "{"
+
+send "\01d\n"
+
+expect "dev@"
+
+send "screen -S fabio\n" 
+
+expect "dev@"
+
+send "./fabio-1.5.11-go1.11.5-linux_amd64\n"
+
+send "\01d\n"
+
+expect "\["
+
+expect "dev@"
+
+
+
+expect "dev@"
+send "cd \$HOME/\n"
+expect "dev@"
+send "mkdir project\n"
+expect "dev@"
+send "cd \$HOME/project\n"
+expect "dev@"
+send "mkdir Dockerui\n"
+expect "dev@"
+send "cd \$HOME/project\n"
+expect "dev@"
+send "git clone https://github.com/SQ-ONE/ifrm-ui.git\n"
+expect "cloning"
+expect "username"
+send "rahul5196\n"
+expect "password"
+send "square123**\n"
+expect "remote"
+expect "dev@"
+send "cd ifrm-ui\n"
+expect "dev@"
+send "git checkout v0.12-beta\n"
+expect "Note:"
+expect "dev@"
+send "npm install\n"
+expect "\["
+send "screen -S npm_build\n"
+expect "dev@"
+send "cd \$HOME/project/ifrm-ui\n"
+expect "dev@"
+send "npm run build\n"
+expect "\>"
+expect "Opening"
+expect "\("
+expect "Webpack"
+expect "Your app is compiled in production mode in"
+expect "Opening"
+send "\01d\n"
+expect "\["
+expect "dev@"
+
+
+
+
+
+
+send "cd \$HOME/project\n"
+expect "dev@"
+send "git clone https://github.com/SQ-ONE/ifrm-api.git\n"
+expect "cloning"
+expect "username"
+send "rahul5196\n"
+expect "password"
+send "square123**\n"
+expect "remote"
+expect "dev@"
+send "cd ifrm-api\n"
+expect "dev@"
+send "git checkout v0.17-beta\n"
+expect "Note:"
+expect "dev@"
+send "mv ifrm.prod.conf.example ifrm.prod.conf\n"
+expect "dev@"
+send "echo \"pidfile.path=/dev/null\" \>> ifrm.prod.conf\n"
+expect "dev"
+send "cp \$HOME/files/configuration_files/add.txt \$HOME/project/ifrm-api/\n"
+expect "dev@"
+send "sed \-i.bak \'\/lazy val \`ifrm-common\` \= \(project in file\(\"ifrm-common\"\)\)\/r add.txt\' build.sbt\n"
+expect "import"
+expect "dev"
+send "sbt clean compile\n"
+expect "\["
+expect "dev@"
+send "sbt docker:publishLocal\n"
+expect "\["
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-user-access-management-impl/target/docker/stage\n"
+expect "dev@"
+send "rm -rf Dockerfile\n"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-case-review-impl/target/docker/stage\n"
+expect "dev@"
+send "rm -rf Dockerfile\n"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-customer-service-impl/target/docker/stage\n"
+expect "dev@"
+send "rm -rf Dockerfile\n"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-investigation-impl/target/docker/stage\n"
+expect "dev@"
+send "rm -rf Dockerfile\n"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-transaction-monitoring-impl/target/docker/stage\n"
+expect "dev@"
+send "rm -rf Dockerfile\n"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-screener-impl/target/docker/stage\n"
+expect "dev@"
+send "rm -rf Dockerfile\n"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-card-common-impl/target/docker/stage\n"
+expect "dev@"
+send "rm -rf Dockerfile\n"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-atm-cognitive-impl/target/docker/stage\n"
+expect "dev@"
+send "rm -rf Dockerfile\n"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-atm-rule-engine-impl/target/docker/stage\n"
+expect "dev@"
+send "rm -rf Dockerfile\n"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-pos-cognitive-impl/target/docker/stage\n"
+expect "dev@"
+send "rm -rf Dockerfile\n"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-pos-rule-engine-impl/target/docker/stage\n"
+expect "dev@"
+send "rm -rf Dockerfile\n"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-ecom-cognitive-impl/target/docker/stage\n"
+expect "dev@"
+send "rm -rf Dockerfile\n"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-ecom-rule-engine-impl/target/docker/stage\n"
+expect "dev@"
+send "rm -rf Dockerfile\n"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-ibmb-cognitive-impl/target/docker/stage\n"
+expect "dev@"
+send "rm -rf Dockerfile\n"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-ibmb-rule-engine-impl/target/docker/stage\n"
+expect "dev@"
+send "rm -rf Dockerfile\n"
+expect "dev@"
+
+
+send "cd \$HOME/project/ifrm-api\n"
+expect "dev@"
+send "cp ifrm.prod.conf \$HOME/project/ifrm-api/ifrm-user-access-management-impl/target/docker/stage\n"
+expect "dev@"
+send "cp ifrm.prod.conf \$HOME/project/ifrm-api/ifrm-case-review-impl/target/docker/stage\n"
+expect "dev@"
+send "cp ifrm.prod.conf \$HOME/project/ifrm-api/ifrm-customer-service-impl/target/docker/stage\n"
+expect "dev@"
+send "cp ifrm.prod.conf \$HOME/project/ifrm-api/ifrm-investigation-impl/target/docker/stage\n"
+expect "dev@"
+send "cp ifrm.prod.conf \$HOME/project/ifrm-api/ifrm-transaction-monitoring-impl/target/docker/stage\n"
+expect "dev@"
+send "cp ifrm.prod.conf \$HOME/project/ifrm-api/ifrm-screener-impl/target/docker/stage\n"
+expect "dev@"
+send "cp ifrm.prod.conf \$HOME/project/ifrm-api/ifrm-card-common-impl/target/docker/stage\n"
+expect "dev@"
+send "cp ifrm.prod.conf \$HOME/project/ifrm-api/ifrm-atm-cognitive-impl/target/docker/stage\n"
+expect "dev@"
+send "cp ifrm.prod.conf \$HOME/project/ifrm-api/ifrm-atm-rule-engine-impl/target/docker/stage\n"
+expect "dev@"
+send "cp ifrm.prod.conf \$HOME/project/ifrm-api/ifrm-pos-cognitive-impl/target/docker/stage\n"
+expect "dev@"
+send "cp ifrm.prod.conf \$HOME/project/ifrm-api/ifrm-pos-rule-engine-impl/target/docker/stage\n"
+expect "dev@"
+send "cp ifrm.prod.conf \$HOME/project/ifrm-api/ifrm-ecom-cognitive-impl/target/docker/stage\n"
+expect "dev@"
+send "cp ifrm.prod.conf \$HOME/project/ifrm-api/ifrm-ecom-rule-engine-impl/target/docker/stage\n"
+expect "dev@"
+send "cp ifrm.prod.conf \$HOME/project/ifrm-api/ifrm-ibmb-cognitive-impl/target/docker/stage\n"
+expect "dev@"
+send "cp ifrm.prod.conf \$HOME/project/ifrm-api/ifrm-ibmb-rule-engine-impl/target/docker/stage\n"
+expect "dev@"
+
+
+send "cp \$HOME/files/Dockerfile/Dockerfile_user_access \$HOME/project/ifrm-api/ifrm-user-access-management-impl/target/docker/stage\n"
+expect "dev@"
+send "cp \$HOME/files/Dockerfile/Dockerfile_case \$HOME/project/ifrm-api/ifrm-case-review-impl/target/docker/stage\n"
+expect "dev@"
+send "cp \$HOME/files/Dockerfile/Dockerfile_customer \$HOME/project/ifrm-api/ifrm-customer-service-impl/target/docker/stage\n"
+expect "dev@"
+send "cp \$HOME/files/Dockerfile/Dockerfile_investigation \$HOME/project/ifrm-api/ifrm-investigation-impl/target/docker/stage\n"
+expect "dev@"
+send "cp \$HOME/files/Dockerfile/Dockerfile_transaction \$HOME/project/ifrm-api/ifrm-transaction-monitoring-impl/target/docker/stage\n"
+expect "dev@"
+send "cp \$HOME/files/Dockerfile/Dockerfile_screener \$HOME/project/ifrm-api/ifrm-screener-impl/target/docker/stage\n"
+expect "dev@"
+send "cp \$HOME/files/Dockerfile/Dockerfile_card \$HOME/project/ifrm-api/ifrm-card-common-impl/target/docker/stage\n"
+expect "dev@"
+send "cp \$HOME/files/Dockerfile/Dockerfile_atm_cognitive \$HOME/project/ifrm-api/ifrm-atm-cognitive-impl/target/docker/stage\n"
+expect "dev@"
+send "cp \$HOME/files/Dockerfile/Dockerfile_atm_rule \$HOME/project/ifrm-api/ifrm-atm-rule-engine-impl/target/docker/stage\n"
+expect "dev@"
+send "cp \$HOME/files/Dockerfile/Dockerfile_pos_cognitive \$HOME/project/ifrm-api/ifrm-pos-cognitive-impl/target/docker/stage\n"
+expect "dev@"
+send "cp \$HOME/files/Dockerfile/Dockerfile_pos_rule \$HOME/project/ifrm-api/ifrm-pos-rule-engine-impl/target/docker/stage\n"
+expect "dev@"
+send "cp \$HOME/files/Dockerfile/Dockerfile_ecom_cognitive \$HOME/project/ifrm-api/ifrm-ecom-cognitive-impl/target/docker/stage\n"
+expect "dev@"
+send "cp \$HOME/files/Dockerfile/Dockerfile_ecom_rule \$HOME/project/ifrm-api/ifrm-ecom-rule-engine-impl/target/docker/stage\n"
+expect "dev@"
+send "cp \$HOME/files/Dockerfile/Dockerfile_ibmb_cognitive \$HOME/project/ifrm-api/ifrm-ibmb-cognitive-impl/target/docker/stage\n"
+expect "dev@"
+send "cp \$HOME/files/Dockerfile/Dockerfile_ibmb_rule \$HOME/project/ifrm-api/ifrm-ibmb-rule-engine-impl/target/docker/stage\n"
+expect "dev@"
+
+
+
+send "cd \$HOME/project/ifrm-api/ifrm-user-access-management-impl/target/docker/stage\n"
+expect "dev@"
+send "docker build -f Dockerfile_user_access -t ifrm_user_access:new . \n"
+expect "free"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-case-review-impl/target/docker/stage\n"
+expect "dev@"
+send "docker build -f Dockerfile_case -t ifrm_case:new .\n"
+expect "free"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-customer-service-impl/target/docker/stage\n"
+expect "dev@"
+send "docker build -f Dockerfile_customer -t ifrm_customer:new .\n"
+expect "free"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-investigation-impl/target/docker/stage\n"
+expect "dev@"
+send "docker build -f Dockerfile_investigation -t ifrm_investigation:new .\n"
+expect "free"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-transaction-monitoring-impl/target/docker/stage\n"
+expect "dev@"
+send "docker build -f Dockerfile_transaction -t ifrm_transaction:new .\n"
+expect "free"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-screener-impl/target/docker/stage\n"
+expect "dev@"
+send "docker build -f Dockerfile_screener -t ifrm_screener:new .\n"
+expect "free"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-card-common-impl/target/docker/stage\n"
+expect "dev@"
+send "docker build -f Dockerfile_card -t ifrm_card:new .\n"
+expect "free"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-atm-cognitive-impl/target/docker/stage\n"
+expect "dev@"
+send "docker build -f Dockerfile_atm_cognitive -t ifrm_atm_cognitive:new .\n"
+expect "free"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-atm-rule-engine-impl/target/docker/stage\n"
+expect "dev@"
+send "docker build -f Dockerfile_atm_rule -t ifrm_atm_rule:new .\n"
+expect "free"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-pos-cognitive-impl/target/docker/stage\n"
+expect "dev@"
+send "docker build -f Dockerfile_pos_cognitive -t ifrm_pos_cognitive:new .\n"
+expect "free"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-pos-rule-engine-impl/target/docker/stage\n"
+expect "dev@"
+send "docker build -f Dockerfile_pos_rule -t ifrm_pos_rule:new .\n"
+expect "free"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-ecom-cognitive-impl/target/docker/stage\n"
+expect "dev@"
+send "docker build -f Dockerfile_ecom_cognitive -t ifrm_ecom_cognitive:new .\n"
+expect "free"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-ecom-rule-engine-impl/target/docker/stage\n"
+expect "dev@"
+send "docker build -f Dockerfile_ecom_rule -t ifrm_ecom_rule:new .\n"
+expect "free"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-ibmb-cognitive-impl/target/docker/stage\n"
+expect "dev@"
+send "docker build -f Dockerfile_ibmb_cognitive -t ifrm_ibmb_cognitive:new .\n"
+expect "free"
+expect "dev@"
+send "cd \$HOME/project/ifrm-api/ifrm-ibmb-rule-engine-impl/target/docker/stage\n"
+expect "dev@"
+send "docker build -f Dockerfile_ibmb_rule -t ifrm_ibmb_rule:new .\n"
+expect "free"
+expect "dev@"
+
+
+
+
+
+
+send "cd \$HOME/project/ifrm-api\n"
+expect "dev@"
+
+send "docker run -t -i -d --network host -v /var/log/bankiq/ifrm:/var/log/bankiq/ifrm --name ifrm_user_access ifrm_user_access:new\n"
+expect "dev@"
+send "docker run -t -i -d --network host -v /var/log/bankiq/ifrm:/var/log/bankiq/ifrm --name ifrm_case ifrm_case:new\n"
+expect "dev@"
+send "docker run -t -i -d --network host -v /var/log/bankiq/ifrm:/var/log/bankiq/ifrm --name ifrm_customer ifrm_customer:new\n"
+expect "dev@"
+send "docker run -t -i -d --network host -v /var/log/bankiq/ifrm:/var/log/bankiq/ifrm --name ifrm_investigation ifrm_investigation:new\n"
+expect "dev@"
+send "docker run -t -i -d --network host -v /var/log/bankiq/ifrm:/var/log/bankiq/ifrm --name ifrm_transaction ifrm_transaction:new\n"
+expect "dev@"
+send "docker run -t -i -d --network host -v /var/log/bankiq/ifrm:/var/log/bankiq/ifrm --name ifrm_screener ifrm_screener:new\n"
+expect "dev@"
+send "docker run -t -i -d --network host -v /var/log/bankiq/ifrm:/var/log/bankiq/ifrm --name ifrm_card ifrm_card:new\n"
+expect "dev@"
+send "docker run -t -i -d --network host -v /var/log/bankiq/ifrm:/var/log/bankiq/ifrm --name ifrm_atm_cognitive ifrm_atm_cognitive:new\n"
+expect "dev@"
+send "docker run -t -i -d --network host -v /var/log/bankiq/ifrm:/var/log/bankiq/ifrm --name ifrm_atm_rule ifrm_atm_rule:new\n"
+expect "dev@"
+send "docker run -t -i -d --network host -v /var/log/bankiq/ifrm:/var/log/bankiq/ifrm --name ifrm_pos_rule ifrm_pos_rule:new\n"
+expect "dev@"
+send "docker run -t -i -d --network host -v /var/log/bankiq/ifrm:/var/log/bankiq/ifrm --name ifrm_pos_cognitive ifrm_pos_cognitive:new\n"
+expect "dev@"
+send "docker run -t -i -d --network host -v /var/log/bankiq/ifrm:/var/log/bankiq/ifrm --name ifrm_ecom_rule ifrm_ecom_rule:new\n"
+expect "dev@"
+send "docker run -t -i -d --network host -v /var/log/bankiq/ifrm:/var/log/bankiq/ifrm --name ifrm_ecom_cognitive ifrm_ecom_cognitive:new\n"
+expect "dev@"
+send "docker run -t -i -d --network host -v /var/log/bankiq/ifrm:/var/log/bankiq/ifrm --name ifrm_ibmb_rule ifrm_ibmb_rule:new\n"
+expect "dev@"
+send "docker run -t -i -d --network host -v /var/log/bankiq/ifrm:/var/log/bankiq/ifrm --name ifrm_ibmb_cognitive ifrm_ibmb_cognitive:new\n"
+expect "dev@"
+
+
+
+send "cd \$HOME/project\n"
+expect "dev@"
+send "git clone https://github.com/SQ-ONE/ifrm-audit-log.git\n"
+expect "cloning"
+#expect "username"
+#send "rahul5196\n"
+#expect "password"
+#send "square123**\n"
+#expect "remote"
+expect "dev@"
+send "cd ifrm-audit-log\n"
+expect "dev@"
+send "git checkout IFRM-522\n"
+expect "Branch"
+expect "dev@"
+send "mv ifrm-audit-log.conf.example ifrm-audit-log.conf\n"
+expect "dev@"
+send "echo \"pidfile.path=/dev/null\" \>> ifrm-audit-log.conf\n"
+expect "dev"
+send "cd \$HOME/project/ifrm-audit-log\n"
+expect "dev@"
+send "cp \$HOME/files/configuration_files/add_audit.txt \$HOME/project/ifrm-audit-log/\n"
+expect "dev@"
+send "echo \"enablePlugins\(JavaAppPackaging\)\" \>> build.sbt\n"
+expect "dev@"
+send "echo \"enablePlugins\(\DockerPlugin\)\" \>> build.sbt\n"
+expect "dev@"
+send "sbt clean compile\n"
+expect "\["
+expect "dev@"
+send "sbt docker:publishLocal\n"
+expect "\["
+expect "dev@"
+send "cd \$HOME/project/ifrm-audit-log/target/docker/stage\n"
+expect "dev@"
+send "rm -rf Dockerfile\n"
+expect "dev@"
+send "cp \$HOME/files/Dockerfile/Dockerfile_audit \$HOME/project/ifrm-audit-log/target/docker/stage\n"
+expect "dev@"
+send "cp \$HOME/project/ifrm-audit-log/ifrm-audit-log.conf \$HOME/project/ifrm-audit-log/target/docker/stage/\n"
+expect "dev@"
+send "docker build -f Dockerfile_audit -t ifrm_audit:new .\n"
+expect "free"
+expect "dev@"
+send "docker run -t -i -d --network host -v /var/log/bankiq/ifrm:/var/log/bankiq/ifrm --name ifrm_audit ifrm_audit:new\n"
+expect "dev@"
+
+
+
+
+send "cd \$HOME/project/Dockerui\n"
+expect "dev@"
+send "cp \$HOME/files/Dockerfile/Dockerfile_ubuntu \$HOME/project/Dockerui\n"
+expect "dev@"
+send "cp \$HOME/files/ui/ifrm-ui \$HOME/project/Dockerui\n"
+expect "dev@"
+send "cd \$HOME/project/Dockerui\n"
+expect "dev@"
+send "cp -r \$HOME/project/ifrm-ui/dist \$HOME/project/Dockerui\n"
+expect "dev@"
+send "docker build -f Dockerfile_ubuntu -t ifrm_ui:new .\n"
+expect "free"
+expect "dev@"
+send "docker run -d --network host --name ifrm_ui --rm ifrm_ui:new\n"
+expect "dev@"
+
+
+
+
+
+
+
+
+
+send "docker system prune\n"
+expect "WARNING"
+expect "Are you sure you want to continue"
+send "y\n"
+expect "Deleted"
+expect "dev@"
+
+
+
+send "cd \$HOME/project/ifrm-audit-log/deployment/consul-service-registration\n"
+
+expect "dev@"
+
+send "bash ifrm-audit-log-register.sh\n"
+
+expect "dev@"
+
+send "cd \$HOME/project/ifrm-audit-log/deployment/consul-service-check\n"
+
+expect "dev@"
+
+send "bash ifrm-audit-log-consul-check.sh\n"
+
+expect "HTTP"
+
+expect "dev@"
+
+send "cd \$HOME/project/ifrm-api/deployment/consul-service-registration\n"
+
+expect "dev@"
+
+send "bash ifrm-user-access-management-register.sh\n"
+
+expect "dev@"
+
+send "bash ifrm-case-review-register.sh\n"
+
+
+expect "dev@"
+
+send "bash ifrm-customer-service-register.sh\n"
+
+expect "dev@"
+
+
+send "bash ifrm-investigation-register.sh\n"
+
+expect "dev@"
+
+send "bash ifrm-transaction-monitoring-register.sh\n"
+
+expect "dev@"
+
+send "bash ifrm-screener-register.sh\n"
+
+expect "dev@"
+
+send "bash ifrm-atm-rule-engine-register.sh\n"
+
+expect "dev@"
+
+send "bash ifrm-atm-cognitive-register.sh\n"
+
+expect "dev@"
+
+send "bash ifrm-pos-rule-engine-register.sh\n"
+
+expect "dev@"
+
+send "bash ifrm-pos-cognitive-register.sh\n"
+
+expect "dev@"
+
+send "bash ifrm-ecom-rule-engine-register.sh\n"
+
+expect "dev@"
+
+send "bash ifrm-ecom-cognitive-register.sh\n"
+
+expect "dev@"
+
+send "bash ifrm-ibmb-rule-engine-register.sh\n"
+
+expect "dev@"
+
+send "bash ifrm-ibmb-cognitive-register.sh\n"
+
+expect "dev@"
+
+send "bash ifrm-card-common-register.sh\n"
+
+expect "dev@"
+
+send "cd \$HOME/project/ifrm-api/deployment/consul-service-check\n"
+
+expect "dev@"
+
+send "bash ifrm-user-access-management-consul-check.sh\n"
+
+expect "HTTP"
+
+expect "dev@"
+
+send "bash ifrm-case-review-consul-check.sh\n"
+
+expect "HTTP"
+
+expect "dev@"
+
+send "bash ifrm-customer-service-consul-check.sh\n"
+
+expect "HTTP"
+
+expect "dev@"
+
+send "bash ifrm-investigation-consul-check.sh\n"
+
+expect "HTTP"
+
+expect "dev@"
+
+send "bash ifrm-transaction-monitoring-consul-check.sh\n"
+
+expect "HTTP"
+
+expect "dev@"
+
+send "bash ifrm-screener-consul-check.sh\n"
+
+
+expect "HTTP"
+
+expect "dev@"
+
+
+
+
+send "bash ifrm-atm-rule-engine-consul-check.sh\n"
+
+
+expect "HTTP"
+
+expect "dev@"
+
+
+send "bash ifrm-atm-cognitive-consul-check.sh\n"
+
+
+expect "HTTP"
+
+expect "dev@"
+
+send "bash ifrm-pos-rule-engine-consul-check.sh\n"
+
+expect "HTTP"
+
+expect "dev@"
+
+send "bash ifrm-pos-cognitive-consul-check.sh\n"
+
+
+expect "HTTP"
+
+expect "dev@"
+
+send "bash ifrm-ecom-rule-engine-consul-check.sh\n"
+
+expect "HTTP"
+
+expect "dev@"
+
+
+send "bash ifrm-ecom-cognitive-consul-check.sh\n"
+
+
+expect "HTTP"
+
+expect "dev@"
+
+send "bash ifrm-ibmb-rule-engine-consul-check.sh\n"
+
+expect "HTTP"
+
+expect "dev@"
+
+
+send "bash ifrm-ibmb-cognitive-consul-check.sh\n"
+
+
+expect "HTTP"
+
+expect "dev@"
+
+send "bash ifrm-card-common-consul-check.sh\n"
+
+expect "HTTP"
+
+expect "dev@"
+
+
+interact
+
+
+
+
+
+
+
+
+
+
+
